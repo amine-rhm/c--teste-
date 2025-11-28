@@ -1,21 +1,13 @@
-using UniversiteDomain.DataAdapters;
 using UniversiteDomain.DataAdapters.DataAdaptersFactory;
 using UniversiteDomain.Entities;
 using UniversiteDomain.Exceptions.ParcoursExceptions;
 using UniversiteDomain.Exceptions.UeExceptions;
 
-namespace UniversiteDomain.UseCases.ParcoursUseCases.UeDansParcours;
+namespace UniversiteDomain.UseCases.ParcoursUseCase.Add;
 
-public class AddUeDansParcoursUseCase
+public class AddUeDansParcoursUseCase(IRepositoryFactory repositoryFactory)
 {
-    private readonly IRepositoryFactory repositoryFactory;
-
-    public AddUeDansParcoursUseCase(IRepositoryFactory repositoryFactory)
-    {
-        this.repositoryFactory = repositoryFactory ?? throw new ArgumentNullException(nameof(repositoryFactory));
-    }
-
-    // Ajouter une UE à un parcours
+    // Rajout d'une Ue dans un parcours
     public async Task<Parcours> ExecuteAsync(Parcours parcours, Ue ue)
     {
         ArgumentNullException.ThrowIfNull(parcours);
@@ -29,57 +21,48 @@ public class AddUeDansParcoursUseCase
         return await repositoryFactory.ParcoursRepository().AddUeAsync(idParcours, idUe);
     }
 
-    // Ajouter plusieurs UEs à un parcours
+    // Rajout de plusieurs Ues dans un parcours
     public async Task<Parcours> ExecuteAsync(Parcours parcours, List<Ue> ues)
     {
-        ArgumentNullException.ThrowIfNull(parcours);
         ArgumentNullException.ThrowIfNull(ues);
-
-        long[] idUes = ues.Select(u => u.Id).ToArray();
-        return await ExecuteAsync(idParcours: parcours.Id, idUes: idUes);
+        ArgumentNullException.ThrowIfNull(parcours);
+        long[] idUes = ues.Select(x => x.Id).ToArray();
+        return await ExecuteAsync(parcours.Id, idUes);
     }
 
     public async Task<Parcours> ExecuteAsync(long idParcours, long[] idUes)
     {
-        ArgumentNullException.ThrowIfNull(idUes);
-        
-        if (idUes.Length == 0)
-            throw new ArgumentException("La liste des UEs ne peut pas être vide", nameof(idUes));
-
-        Parcours parcoursFinal = null!;
-        foreach (var idUe in idUes)
-        {
-            await CheckBusinessRules(idParcours, idUe);
-            parcoursFinal = await repositoryFactory.ParcoursRepository().AddUeAsync(idParcours, idUe);
-        }
-        return parcoursFinal;
+        foreach (var id in idUes) 
+            await CheckBusinessRules(idParcours, id);
+        return await repositoryFactory.ParcoursRepository().AddUeAsync(idParcours, idUes);
     }
 
     private async Task CheckBusinessRules(long idParcours, long idUe)
     {
-        if (idParcours <= 0) throw new ArgumentOutOfRangeException(nameof(idParcours));
-        if (idUe <= 0) throw new ArgumentOutOfRangeException(nameof(idUe));
+        ArgumentOutOfRangeException.ThrowIfNegativeOrZero(idParcours);
+        ArgumentOutOfRangeException.ThrowIfNegativeOrZero(idUe);
 
-        var ueRepo = repositoryFactory.UeRepository() 
-                     ?? throw new InvalidOperationException("IUeRepository est null");
-        var parcoursRepo = repositoryFactory.ParcoursRepository() 
-                           ?? throw new InvalidOperationException("IParcoursRepository est null");
+        ArgumentNullException.ThrowIfNull(repositoryFactory);
+        ArgumentNullException.ThrowIfNull(repositoryFactory.UeRepository());
+        ArgumentNullException.ThrowIfNull(repositoryFactory.ParcoursRepository());
 
-        // Vérifier que l'UE existe
-        List<Ue> ueList = await ueRepo.FindByConditionAsync(u => u.Id == idUe);
-        if (ueList.Count == 0)
-            throw new UeNotFoundException($"UE {idUe} introuvable");
+        // On recherche l'ue
+        List<Ue> ue = await repositoryFactory.UeRepository().FindByConditionAsync(e => e.Id.Equals(idUe));
+        if (ue.Count == 0) 
+            throw new UeNotFoundException(idUe.ToString());
 
-        // Vérifier que le parcours existe
-        List<Parcours> parcoursList = await parcoursRepo.FindByConditionAsync(p => p.Id == idParcours);
-        Parcours parcours = parcoursList.FirstOrDefault()
-                            ?? throw new ParcoursNotFoundException($"Parcours {idParcours} introuvable");
+        // On recherche le parcours
+        List<Parcours> parcours = await repositoryFactory.ParcoursRepository().FindByConditionAsync(p => p.Id.Equals(idParcours));
+        if (parcours.Count == 0) 
+            throw new ParcoursNotFoundException(idParcours.ToString());
 
-        // Initialisation si null (normalement pas nécessaire si bien configuré)
-        parcours.UesEnseignees ??= new List<Ue>();
-
-        // Vérifier que l'UE n'est pas déjà présente
-        if (parcours.UesEnseignees.Any(u => u.Id == idUe))
-            throw new DuplicateUeDansParcoursException($"UE {idUe} est déjà présente dans le parcours {idParcours}");
+        // On vérifie que l'Ue n'est pas déjà dans le parcours
+        if (parcours[0].UesEnseignees != null)
+        {
+            List<Ue>? inscrites = parcours[0].UesEnseignees;
+            var trouve = inscrites?.FindAll(e => e.Id.Equals(idUe));
+            if (trouve != null && trouve.Count > 0) 
+                throw new DuplicateUeDansParcoursException($"{idUe} est déjà présente dans le parcours : {idParcours}");
+        }
     }
 }

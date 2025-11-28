@@ -4,9 +4,8 @@ public interface IRepositoryFactory
 {
     IParcoursRepository ParcoursRepository();
     IEtudiantRepository EtudiantRepository();
-    IUeRepository UeRepository();
-    
-    // Méthodes de gestion du data source
+    IUeRepository UeRepository();  
+    INoteRepository NoteRepository(); 
     Task EnsureDeletedAsync();
     Task EnsureCreatedAsync();
     Task SaveChangesAsync();
