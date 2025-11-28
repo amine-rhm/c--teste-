@@ -1,15 +1,19 @@
-namespace UniversiteDomain.Entities;
-
-public class Etudiant
+namespace UniversiteDomain.Entities
 {
-    public long Id { get; set; }
-    public string NumEtud { get; set; } = string.Empty;
-    public string Nom { get; set; } = string.Empty;
-    public string Prenom { get; set; } = string.Empty;
-    public string Email { get; set; } = string.Empty;
-
-    public override string ToString()
+    public class Etudiant
     {
-        return $"ID {Id} : {NumEtud} - {Nom} {Prenom} inscrit en "/*+ParcoursSuivi*/;
+        public long Id { get; set; }
+        public string NumEtud { get; set; } = string.Empty;
+        public string Nom { get; set; } = string.Empty;
+        public string Prenom { get; set; } = string.Empty;
+        public string Email { get; set; } = string.Empty;
+        
+        // Navigation vers le parcours
+        public Parcours? Parcours { get; set; }
+
+        public override string ToString()
+        {
+            return $"ID {Id} : {NumEtud} - {Nom} {Prenom} inscrit en {Parcours?.NomParcours ?? "Aucun parcours"}";
+        }
     }
 }
