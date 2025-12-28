@@ -12,6 +12,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UniversiteDomain", "Univers
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UniversiteDomainUnitTest", "UniversiteDomainUnitTest\UniversiteDomainUnitTest.csproj", "{7162D679-73AF-489D-B480-E4A06EEAEF3B}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UniversiteEFDataProvider", "UniversiteEFDataProvider\UniversiteEFDataProvider.csproj", "{27754878-4067-4C53-AD3E-FD1FA20B82BC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UniversiteRestApi", "UniversiteRestApi\UniversiteRestApi.csproj", "{363C4DFF-3FFE-444E-9128-888949F4594B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -20,6 +24,8 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{95134941-F1C5-4CFD-9AE0-AC35F8A7CCA0} = {D1D21A87-484B-4F26-A2E0-192AF0D2A931}
 		{7162D679-73AF-489D-B480-E4A06EEAEF3B} = {599014BB-8129-4F0B-B4E3-E6D218A5C2DA}
+		{27754878-4067-4C53-AD3E-FD1FA20B82BC} = {A9D95790-7185-4E8C-A7BE-BE6E551AFAC4}
+		{363C4DFF-3FFE-444E-9128-888949F4594B} = {BD9B0D37-642B-4949-814D-748B058ECBF9}
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{95134941-F1C5-4CFD-9AE0-AC35F8A7CCA0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -30,5 +36,13 @@ Global
 		{7162D679-73AF-489D-B480-E4A06EEAEF3B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7162D679-73AF-489D-B480-E4A06EEAEF3B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7162D679-73AF-489D-B480-E4A06EEAEF3B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{27754878-4067-4C53-AD3E-FD1FA20B82BC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{27754878-4067-4C53-AD3E-FD1FA20B82BC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{27754878-4067-4C53-AD3E-FD1FA20B82BC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{27754878-4067-4C53-AD3E-FD1FA20B82BC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{363C4DFF-3FFE-444E-9128-888949F4594B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{363C4DFF-3FFE-444E-9128-888949F4594B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{363C4DFF-3FFE-444E-9128-888949F4594B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{363C4DFF-3FFE-444E-9128-888949F4594B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
