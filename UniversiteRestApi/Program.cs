@@ -1,28 +1,57 @@
-using NuGet.Protocol.Core.Types;
+using Microsoft.EntityFrameworkCore;
 using UniversiteDomain.DataAdapters.DataAdaptersFactory;
+using UniversiteEFDataProvider.Data;
+using UniversiteEFDataProvider.RepositoryFactories;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the controller.
+// Add services to the container.
 builder.Services.AddControllers();
-builder.Services.AddEndpointsApiExplorer(); 
-// Chargement des services Swagger
+
+// Mis en place d'un annuaire des services
+builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-builder.Services.AddScoped<IRepositoryFactory, UniversiteDomain.DataAdapters.DataAdaptersFactory.IRepositoryFactory>();
+
+// Configuration du logging
+builder.Services.AddLogging(options =>
+{
+    options.ClearProviders();
+    options.AddConsole();
+});
+
+// Configuration de la connexion à MySql
+string connectionString = builder.Configuration.GetConnectionString("MySqlConnection") 
+                          ?? throw new InvalidOperationException("Connection string 'MySqlConnection' not found.");
+
+// Création du contexte de la base de données
+builder.Services.AddDbContext<UniversiteDbContext>(options => options.UseMySQL(connectionString));
+
+// La factory est rajoutée dans les services
+builder.Services.AddScoped<IRepositoryFactory, RepositoryFactory>();
+
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    // Démarrage du service de documentation de l'API au lancement du projet en dev
-    app.UseSwagger();
-    // Démarrage de l'interface graphique de Swagger au lancement du projet en dev
-    app.UseSwaggerUI();
-    app.MapOpenApi();
-}
-
+// Configuration du serveur Web
 app.UseHttpsRedirection();
-app.UseAuthorization();
 app.MapControllers();
 
+// Configuration de Swagger
+app.UseSwagger();
+app.UseSwaggerUI();
+
+// Initialisation de la base de données (à commenter en production)
+using (var scope = app.Services.CreateScope())
+{
+    var logger = scope.ServiceProvider.GetRequiredService<ILogger<UniversiteDbContext>>();
+    DbContext context = scope.ServiceProvider.GetRequiredService<UniversiteDbContext>();
+    
+    logger.LogInformation("Initialisation de la base de données");
+    logger.LogInformation("Suppression de la BD si elle existe");
+    await context.Database.EnsureDeletedAsync();
+    
+    logger.LogInformation("Création de la BD et des tables à partir des entities");
+    await context.Database.EnsureCreatedAsync();
+}
+
+// Exécution de l'application
 app.Run();
