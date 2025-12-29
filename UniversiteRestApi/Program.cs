@@ -1,3 +1,6 @@
+using NuGet.Protocol.Core.Types;
+using UniversiteDomain.DataAdapters.DataAdaptersFactory;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the controller.
@@ -5,7 +8,7 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer(); 
 // Chargement des services Swagger
 builder.Services.AddSwaggerGen();
-
+builder.Services.AddScoped<IRepositoryFactory, UniversiteDomain.DataAdapters.DataAdaptersFactory.IRepositoryFactory>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
