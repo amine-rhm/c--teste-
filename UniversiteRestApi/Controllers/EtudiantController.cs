@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using UniversiteDomain.DataAdapters.DataAdaptersFactory;
+using UniversiteDomain.Dtos;
 using UniversiteDomain.Entities;
 using UniversiteDomain.UseCases.EtudiantUseCases.Create;
 
@@ -15,34 +16,54 @@ namespace UniversiteRestApi.Controllers
         [HttpGet]
         public async Task<IActionResult> Get()
         {
-        
-            var etudiant = await repositoryFactory.EtudiantRepository().FindAllAsync();
-            return Ok(etudiant);
+            var etudiants = await repositoryFactory.EtudiantRepository().FindAllAsync();
+    
+            // Convertit chaque étudiant en DTO
+            var etudiantsDto = etudiants.Select(e => new EtudiantDto().ToDto(e)).ToList();
+    
+            return Ok(etudiantsDto);
         }
 
         // GET api/Etudiant/5 - Récupère un étudiant par son ID
         [HttpGet("{id}")]
-        public async Task<IActionResult> Get(int id)
+        public async Task<IActionResult> GetUnEtudiant(int id)
         {
-            // Récupère l'étudiant depuis la base de données
             var etudiant = await repositoryFactory.EtudiantRepository().FindAsync(id);
-    
-            // Si l'étudiant n'existe pas
             if (etudiant == null)
-            {
-                return NotFound();  // Retourne 404
-            }
-    
-            return Ok(etudiant);  // Retourne l'étudiant en JSON
+                return NotFound();
+            return Ok(new EtudiantDto().ToDto(etudiant));
         }
+        
         // POST api/Etudiant - Crée un nouvel étudiant
+        //[HttpPost]
+        //public async Task<Etudiant> PostAsync([FromBody] Etudiant etudiant)
+        // {
+        //     CreateEtudiantUseCase uc=new CreateEtudiantUseCase(repositoryFactory.EtudiantRepository());
+        //    return await uc.ExecuteAsync(etudiant);
+        // }
+       
+       
+        // teste new version with DTO ====> Au lieu de recevoir un Etudiant complet, on reçoit un EtudiantDto (version simplifiée depend de ce que nous avant choisi à recevoir dans le fichier DTO )
+       
+        // POST api/<EtudiantController>
         [HttpPost]
-        public async Task<Etudiant> PostAsync([FromBody] Etudiant etudiant)
+        public async Task<ActionResult<EtudiantDto>> PostAsync([FromBody] EtudiantDto etudiantDto)
         {
-            CreateEtudiantUseCase uc=new CreateEtudiantUseCase(repositoryFactory.EtudiantRepository());
-            return await uc.ExecuteAsync(etudiant);
+            CreateEtudiantUseCase createEtudiantUc = new CreateEtudiantUseCase(repositoryFactory.EtudiantRepository());           
+            Etudiant etud = etudiantDto.ToEntity();
+            try
+            {
+                etud = await createEtudiantUc.ExecuteAsync(etud);
+            }
+            catch (Exception e)
+            {
+                ModelState.AddModelError(nameof(e), e.Message);
+                return ValidationProblem();
+            }
+            EtudiantDto dto = new EtudiantDto().ToDto(etud);
+            return CreatedAtAction(nameof(GetUnEtudiant), new { id = dto.Id }, dto);
         }
-
+        
         // PUT api/Etudiant/5 - Modifie un étudiant
         [HttpPut("{id}")]
         public void Put(int id, [FromBody] string value)
