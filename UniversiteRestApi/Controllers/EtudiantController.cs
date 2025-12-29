@@ -13,18 +13,28 @@ namespace UniversiteRestApi.Controllers
 
         // GET: api/Etudiant - Récupère tous les étudiants
         [HttpGet]
-        public IEnumerable<string> Get()
+        public async Task<IActionResult> Get()
         {
-            return new string[] { "value1", "value2" };
+        
+            var etudiant = await repositoryFactory.EtudiantRepository().FindAllAsync();
+            return Ok(etudiant);
         }
 
         // GET api/Etudiant/5 - Récupère un étudiant par son ID
         [HttpGet("{id}")]
-        public string Get(int id)
+        public async Task<IActionResult> Get(int id)
         {
-            return "value";
+            // Récupère l'étudiant depuis la base de données
+            var etudiant = await repositoryFactory.EtudiantRepository().FindAsync(id);
+    
+            // Si l'étudiant n'existe pas
+            if (etudiant == null)
+            {
+                return NotFound();  // Retourne 404
+            }
+    
+            return Ok(etudiant);  // Retourne l'étudiant en JSON
         }
-
         // POST api/Etudiant - Crée un nouvel étudiant
         [HttpPost]
         public async Task<Etudiant> PostAsync([FromBody] Etudiant etudiant)
