@@ -13,7 +13,7 @@ public class ParcoursRepository(UniversiteDbContext context)
         ArgumentNullException.ThrowIfNull(parcours);
         ArgumentNullException.ThrowIfNull(etudiant);
         parcours.Inscrits.Add(etudiant);
-        etudiant.Parcours = parcours;
+        etudiant.ParcoursSuivi = parcours;
         await Context.SaveChangesAsync();
         return parcours;
     }
@@ -34,7 +34,7 @@ public class ParcoursRepository(UniversiteDbContext context)
         foreach (var etudiant in etudiants)
         {
             parcours.Inscrits.Add(etudiant);
-            etudiant.Parcours = parcours;
+            etudiant.ParcoursSuivi = parcours;
         }
         await Context.SaveChangesAsync();
         return parcours;
@@ -49,7 +49,7 @@ public class ParcoursRepository(UniversiteDbContext context)
             Etudiant? e = await Context.Etudiants.FindAsync(idEtudiant);
             ArgumentNullException.ThrowIfNull(e);
             p.Inscrits.Add(e);
-            e.Parcours = p;
+            e.ParcoursSuivi = p;
         }
         await Context.SaveChangesAsync();
         return p;

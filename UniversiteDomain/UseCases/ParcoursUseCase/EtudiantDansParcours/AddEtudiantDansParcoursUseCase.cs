@@ -58,7 +58,7 @@ public class AddEtudiantDansParcoursUseCase(
        // On vérifie que l'étudiant n'est pas déjà dans le parcours
         List<Etudiant> inscrit =
             await etudiantRepository.FindByConditionAsync(e =>
-                e.Id.Equals(idEtudiant) && e.Parcours.Id.Equals(idParcours)
+                e.Id.Equals(idEtudiant) && e.ParcoursSuivi != null && e.ParcoursSuivi.Id.Equals(idParcours)
             );
 
         if (inscrit is { Count: > 0 })

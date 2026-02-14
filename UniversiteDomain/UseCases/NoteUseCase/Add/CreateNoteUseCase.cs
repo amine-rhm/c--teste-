@@ -62,10 +62,10 @@ public class CreateNoteUseCase
             throw new DuplicateNoteException($"L'étudiant {note.EtudiantId} a déjà une note dans l'UE {note.UeId}");
 
         // Règle 3 : L'étudiant ne peut avoir une note que dans une UE de son parcours
-        if (etudiant.Parcours == null)
+        if (etudiant.ParcoursSuivi == null)
             throw new UeNotInParcoursException($"L'étudiant {note.EtudiantId} n'est inscrit dans aucun parcours");
 
-        var parcours = etudiant.Parcours;
+        var parcours = etudiant.ParcoursSuivi;
         parcours.UesEnseignees ??= new List<Ue>();
         
         bool ueInParcours = parcours.UesEnseignees.Any(u => u.Id == note.UeId);

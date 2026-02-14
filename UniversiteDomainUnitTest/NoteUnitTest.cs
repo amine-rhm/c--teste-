@@ -32,7 +32,7 @@ public class NoteUnitTest
             Nom = "Dupont", 
             Prenom = "Jean",
             Email = "jean@test.fr",
-            Parcours = parcours
+            ParcoursSuivi = parcours
         };
 
         Note noteCreee = new Note { Id = 1, EtudiantId = idEtudiant, UeId = idUe, Valeur = valeur };
@@ -87,7 +87,7 @@ public class NoteUnitTest
             Id = 1, 
             UesEnseignees = new List<Ue> { ue }
         };
-        Etudiant etudiant = new Etudiant { Id = idEtudiant, Parcours = parcours };
+        Etudiant etudiant = new Etudiant { Id = idEtudiant, ParcoursSuivi = parcours };
         Note noteExistante = new Note { Id = 1, EtudiantId = idEtudiant, UeId = idUe, Valeur = 10 };
 
         var mockEtudiant = new Mock<IEtudiantRepository>();
@@ -125,7 +125,7 @@ public class NoteUnitTest
             Id = 1, 
             UesEnseignees = new List<Ue> { ueAutre }  // L'UE demandée n'est pas dans le parcours
         };
-        Etudiant etudiant = new Etudiant { Id = idEtudiant, Parcours = parcours };
+        Etudiant etudiant = new Etudiant { Id = idEtudiant, ParcoursSuivi = parcours };
 
         var mockEtudiant = new Mock<IEtudiantRepository>();
         mockEtudiant.Setup(r => r.FindByConditionAsync(It.IsAny<Expression<Func<Etudiant, bool>>>()))

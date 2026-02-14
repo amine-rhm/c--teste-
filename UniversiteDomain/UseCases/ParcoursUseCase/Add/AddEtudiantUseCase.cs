@@ -65,7 +65,7 @@ public class AddEtudiantDansParcoursUseCase
 
         // Vérifier que l'étudiant n'est pas déjà inscrit
         var inscrit = await etudiantRepo.FindByConditionAsync(
-            e => e.Id == idEtudiant && e.Parcours != null && e.Parcours.Id == idParcours
+            e => e.Id == idEtudiant && e.ParcoursSuivi != null && e.ParcoursSuivi.Id == idParcours
         );
         if (inscrit.Count > 0)
             throw new DuplicateInscriptionException(

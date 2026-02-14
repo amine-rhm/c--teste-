@@ -1,3 +1,4 @@
+using Microsoft.EntityFrameworkCore;
 using UniversiteDomain.DataAdapters;
 using UniversiteDomain.Entities;
 using UniversiteEFDataProvider.Data;
@@ -13,12 +14,18 @@ public class EtudiantRepository(UniversiteDbContext context)
         ArgumentNullException.ThrowIfNull(Context.Parcours);
         Etudiant e = (await Context.Etudiants.FindAsync(idEtudiant))!;
         Parcours p = (await Context.Parcours.FindAsync(idParcours))!;
-        e.Parcours = p;  
+        e.ParcoursSuivi = p;  
         await Context.SaveChangesAsync();
     }
     
     public async Task AffecterParcoursAsync(Etudiant etudiant, Parcours parcours)
     {
         await AffecterParcoursAsync(etudiant.Id, parcours.Id); 
+    }
+
+    public async Task<Etudiant?> FindEtudiantCompletAsync(long idEtudiant)
+    {
+        ArgumentNullException.ThrowIfNull(Context.Etudiants);
+        return await Context.Etudiants.Include(e => e.NotesObtenues).ThenInclude(n=>n.Ue).FirstOrDefaultAsync(e => e.Id == idEtudiant);
     }
 }

@@ -6,7 +6,7 @@ using UniversiteDomain.Entities;
 using UniversiteDomain.UseCases.ParcoursUseCase.Create;
 using UniversiteDomain.UseCases.ParcoursUseCase.EtudiantDansParcours;
 
-namespace UniversiteDomainUnitTests;
+namespace UniversiteDomainUnitTest;
 
 public class ParcoursUnitTest
 {
@@ -74,7 +74,7 @@ public class ParcoursUnitTest
             Nom = "nom1",
             Prenom = "prenom1",
             Email = "test@test.fr",
-            Parcours = null // Pas encore inscrit !
+            ParcoursSuivi = null // Pas encore inscrit !
         };
 
         // Mock EtudiantRepository

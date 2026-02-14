@@ -8,13 +8,15 @@ namespace UniversiteDomain.Entities
         public string Prenom { get; set; } = string.Empty;
         public string Email { get; set; } = string.Empty;
         
-        // Navigation vers le parcours
-        public Parcours? Parcours { get; set; }
-        // Un étudiant a plusieurs notes
-        public List<Note> Notes { get; set; } = new();
+        // Navigation vers le parcours - UNE SEULE PROPRIÉTÉ
+        public Parcours? ParcoursSuivi { get; set; }
+        
+        // Un étudiant a plusieurs notes - UNE SEULE PROPRIÉTÉ
+        public List<Note>? NotesObtenues { get; set; } = new();
+
         public override string ToString()
         {
-            return $"ID {Id} : {NumEtud} - {Nom} {Prenom} inscrit en {Parcours?.NomParcours ?? "Aucun parcours"}";
+            return $"ID {Id} : {NumEtud} - {Nom} {Prenom} inscrit en {ParcoursSuivi?.NomParcours ?? "Aucun parcours"}";
         }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using System.Linq.Expressions;
 using Moq;
 using UniversiteDomain.DataAdapters;
+using UniversiteDomain.DataAdapters.DataAdaptersFactory;
 using UniversiteDomain.Entities;
 using UniversiteDomain.UseCases.EtudiantUseCases.Create;
 
@@ -25,23 +26,27 @@ public class EtudiantUnitTest
         // On crée l'étudiant qui doit être ajouté en base
         Etudiant etudiantSansId = new Etudiant { NumEtud = numEtud, Nom = nom, Prenom = prenom, Email = email };
 
-        // On initialise une fausse datasource qui va simuler un EtudiantRepository
-        var mock = new Mock<IEtudiantRepository>();
+        // On initialise un faux EtudiantRepository
+        var mockEtudiantRepo = new Mock<IEtudiantRepository>();
 
         // Simulation de la fonction FindByCondition
         var reponseFindByCondition = new List<Etudiant>();
-        mock.Setup(repo => repo.FindByConditionAsync(It.IsAny<Expression<Func<Etudiant, bool>>>()))
+        mockEtudiantRepo.Setup(repo => repo.FindByConditionAsync(It.IsAny<Expression<Func<Etudiant, bool>>>()))
             .ReturnsAsync(reponseFindByCondition);
 
         // Simulation de la fonction Create
         Etudiant etudiantCree = new Etudiant { Id = id, NumEtud = numEtud, Nom = nom, Prenom = prenom, Email = email };
-        mock.Setup(repo => repo.CreateAsync(etudiantSansId)).ReturnsAsync(etudiantCree);
+        mockEtudiantRepo.Setup(repo => repo.CreateAsync(etudiantSansId)).ReturnsAsync(etudiantCree);
 
-        // On crée le bouchon
-        var fauxEtudiantRepository = mock.Object;
+        // On initialise un faux RepositoryFactory
+        var mockFactory = new Mock<IRepositoryFactory>();
+        mockFactory.Setup(f => f.EtudiantRepository()).Returns(mockEtudiantRepo.Object);
+        mockFactory.Setup(f => f.SaveChangesAsync()).Returns(Task.CompletedTask);
 
-        // Création du use case en injectant notre faux repository
-        CreateEtudiantUseCase useCase = new CreateEtudiantUseCase(fauxEtudiantRepository);
+        var fauxRepositoryFactory = mockFactory.Object;
+
+        // Création du use case en injectant notre faux factory
+        CreateEtudiantUseCase useCase = new CreateEtudiantUseCase(fauxRepositoryFactory);
 
         // Appel du use case
         var etudiantTeste = await useCase.ExecuteAsync(etudiantSansId);
