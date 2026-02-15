@@ -85,4 +85,13 @@ public class ParcoursRepository(UniversiteDbContext context)
         await Context.SaveChangesAsync();
         return p;
     }
+
+    // NOUVELLE MÉTHODE AJOUTÉE ⬇️
+    public async Task<List<Parcours>> FindParcoursAvecUeAsync(long ueId)
+    {
+        return await Context.Parcours
+            .Include(p => p.UesEnseignees)
+            .Where(p => p.UesEnseignees.Any(ue => ue.Id == ueId))
+            .ToListAsync();
+    }
 }

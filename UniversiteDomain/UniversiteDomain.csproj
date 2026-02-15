@@ -8,8 +8,6 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <Folder Include="UseCases\NoteUseCases\ExportCsv\" />
-      <Folder Include="UseCases\NoteUseCases\ImportCsv\" />
       <Folder Include="UseCases\UeUseCases\Add\" />
     </ItemGroup>
 
